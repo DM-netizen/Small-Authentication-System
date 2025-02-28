@@ -7,13 +7,15 @@ This is a simple authentication system built using Flask and Bootstrap. It inclu
 - Dashboard page (accessible only to logged-in users)
 - Home page (accessible to all)
 - Session-based authentication management
+- Security of passwords stored in the form of password hashing
+- Facility of changing password when user forgets their previous password
 - Frontend styled with Bootstrap
 
 ## Technologies Used
 - Flask (Python web framework)
 - Flask-Login (User session management)
 - Flask-WTF (Forms handling)
-- SQLite (Database)
+- SQLite3 (Database)
 - Bootstrap (Frontend styling)
 
 ## Installation
@@ -54,20 +56,15 @@ flask-auth-system/
 │-- app/
 │   │-- static/ (CSS, JS, images)
 │   │-- templates/ (HTML templates)
-│   │-- routes.py (Defines application routes)
-│   │-- models.py (Database models)
-│   │-- forms.py (Flask-WTF forms)
-│   └-- __init__.py (App initialization)
-│-- migrations/ (Database migrations)
-│-- requirements.txt (Python dependencies)
-│-- config.py (Configuration settings)
-│-- run.py (Entry point to run the app)
+│-- app.py (Entry point to run the app)
+|-- database.db (Database storing user data)
 └-- README.md (Project documentation)
 ```
 
 ## Usage
 - Visit the home page (`/`)
-- Register (if registration is enabled)
+- Register (`/signup`)
+- Change your password (`/forgot`)
 - Login using your credentials (`/login`)
 - Access the dashboard (`/dashboard`)
 - Logout (`/logout`)
