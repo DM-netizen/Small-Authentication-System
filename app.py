@@ -28,12 +28,9 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 class ForgotForm(FlaskForm):
-    email = StringField('email' , validators=[InputRequired(), Email(message='Invalid Email'), Length(max=50)])
+    email = StringField('Email' , validators=[InputRequired(), Email(message='Invalid Email'), Length(max=50)])
     phn = IntegerField('Phone Number', validators=[InputRequired(), NumberRange(min=1000000000, max=9999999999, message='Phone number must be of 10 digits')])
     password = StringField('Password', validators = [InputRequired(), Length(min=8, max=80)])
-
-# class ChangeForm(FlaskForm):
-#     password = StringField('Password', validators = [InputRequired(), Length(min=8, max=80)])
 
 
 class LoginForm(FlaskForm):
@@ -82,12 +79,16 @@ def forgot():
         print(user.email)
         print(form.email.data)
         if user.email == form.email.data:
-            new_hashed_password = generate_password_hash(form.password.data, method="pbkdf2:sha256")
-            user = User.query.filter_by(phn = user.phn).first()
-            user.password = new_hashed_password        
-            db.session.commit()
-            flash (f"Please login again!","info")
-            return redirect(url_for('login')) 
+            if any(c.islower() for c in form.password.data) and any(c.isupper() for c in form.password.data) and any(c.isdigit() for c in form.password.data) and not form.password.data.isalnum():
+                new_hashed_password = generate_password_hash(form.password.data, method="pbkdf2:sha256")
+                user = User.query.filter_by(phn = user.phn).first()
+                user.password = new_hashed_password        
+                db.session.commit()
+                flash (f"Please login again!","info")
+                return redirect(url_for('login')) 
+            else:
+                flash (f"Password does not meet the required criteria!")
+                return redirect(url_for('forgot'))
         else:
             flash(f"Wrong Email entered!")
             return redirect(url_for('forgot'))
@@ -97,13 +98,17 @@ def forgot():
 def signup():
     form = RegisterForm()
     if form.validate_on_submit():
-        hashed_password = generate_password_hash(form.password.data, method="pbkdf2:sha256")
-        new_user = User(username = form.username.data, email = form.email.data, phn = form.phn.data, password = hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-        flash("New user has been created!")
-        login_user(new_user)
-        return redirect(url_for("dashboard"))
+        if any(c.islower() for c in form.password.data) and any(c.isupper() for c in form.password.data) and any(c.isdigit() for c in form.password.data) and not form.password.data.isalnum():
+            hashed_password = generate_password_hash(form.password.data, method="pbkdf2:sha256")
+            new_user = User(username = form.username.data, email = form.email.data, phn = form.phn.data, password = hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash("New user has been created!")
+            login_user(new_user)
+            return redirect(url_for("dashboard"))
+        else:
+            flash (f"Password does not meet the required criteria!")
+            return redirect(url_for('signup'))
     return render_template('signup.html' , form=form)
 
 @app.route('/dashboard')
