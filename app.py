@@ -70,38 +70,27 @@ def login():
                 login_user(user, remember = form.remember.data)
                 return redirect(url_for("dashboard"))
             else:
+                flash(f"Wrong credentials!","info")
                 return redirect(url_for('login'))
     return render_template('login.html' , form=form)
-
-# @app.route('/change_password/<string:usr>', methods=['GET','POST'])
-# def change_password(usr):
-#     form = ChangeForm()
-#     print("hi!")
-#     if form.validate_on_submit():
-#         print("Form Submitted")
-#         new_hashed_password = generate_password_hash(form.password.data, method="pbkdf2:sha256")
-#         user = User.query.filter_by(phn = usr).first()
-#         user.password = new_hashed_password        
-#         db.session.commit()
-#         print("Password changed")
-#         return redirect(url_for('login')) 
-#     return render_template('change.html', form=form) 
 
 @app.route('/forgot', methods=['GET','POST'])
 def forgot():
     form = ForgotForm()
     if form.validate_on_submit():
         user = User.query.filter_by(phn = form.phn.data).first()
+        print(user.email)
+        print(form.email.data)
         if user.email == form.email.data:
             new_hashed_password = generate_password_hash(form.password.data, method="pbkdf2:sha256")
             user = User.query.filter_by(phn = user.phn).first()
             user.password = new_hashed_password        
             db.session.commit()
-            print("Password changed")
+            flash (f"Please login again!","info")
             return redirect(url_for('login')) 
-            # return redirect(url_for('change_password' , usr=user.phn))
         else:
-            return redirect(url_for('forgot', form=form))
+            flash(f"Wrong Email entered!")
+            return redirect(url_for('forgot'))
     return render_template('forgot.html', form=form)
 
 @app.route('/signup' , methods=['GET','POST'])

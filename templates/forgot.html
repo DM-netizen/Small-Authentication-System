@@ -13,6 +13,15 @@ Forgot Password
 {% block content %}
     <div class="container">
         <form class="form-signin" method="POST" action="/forgot">
+            <div style="color: red;">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for msg in messages %}
+                            <p>{{msg}}</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
             <h2 class="form-signin-heading">Please enter your phone number and email</h2>
             {{ form.hidden_tag() }}
             {{ wtf.form_field(form.email) }}
